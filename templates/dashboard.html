@@ -14,7 +14,7 @@
          <form action="/submit-story" method="post">
             <div class="form-group">
                <label for="story">Story</label>
-               <textarea class="form-control" name="story" rows="16" placeholder ="Start Writting"></textarea>
+               <textarea class="form-control" name="story" rows="16" placeholder ="Start Writting" id="wrttingPad"></textarea>
             </div>
          </form>
       </div>
@@ -37,7 +37,7 @@
       const average = parseFloat((dataset.reduce((a, b) => a + b, 0) / dataset.length) / 100);
       return average;
       }
-      document.addEventListener("keydown", function(event){
+      document.getElementById("wrttingPad").addEventListener("keydown", function(event){
           const currentTime = Date.now();
           const keyDownDistanceCount = keyDownDistance.length;
           const keyUpDistanceCount = keyUpDistance.length;
@@ -57,7 +57,7 @@
               startKey[event.keyCode] = currentTime;
           }
       });
-      document.addEventListener("keyup", function(event){
+      document.getElementById("wrttingPad").addEventListener("keyup", function(event){
           const currentTime = Date.now();
           const keyUpDistanceCount = keyUpDistance.length;
           const keyDownDistanceCount = keyDownDistance.length;
@@ -93,6 +93,6 @@
       userBiometrics['down_up'] = downUpAverage;
       
       console.log(userBiometrics);
-      },60000);
+      },5000);
    </script>
 </html>
