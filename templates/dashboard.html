@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <title>Continues User Authentication</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+   </head>
+   <body>
+      <div class="container ">
+         <h2 class="text-center">Welcome</h2>
+         <form action="/submit-story" method="post">
+            <div class="form-group">
+               <label for="story">Story</label>
+               <textarea class="form-control" name="story" rows="16" placeholder ="Start Writting"></textarea>
+            </div>
+         </form>
+      </div>
+   </body>
+   <script>
+      //User Datasets
+      const userBiometrics = new Object();
+      const keyHold = Array();
+      const keyDownLatency = Array();
+      const keyUpLatency = Array();
+      const keyUpDown = Array();
+      const keyDownUp = Array();
+      
+      const startKey = {};
+      const keyDownDistance = Array();
+      const keyUpDistance = Array();
+      
+      const user = 1;
+      const avgNormalize = (dataset) => {
+      const average = parseFloat((dataset.reduce((a, b) => a + b, 0) / dataset.length) / 100);
+      return average;
+      }
+      document.addEventListener("keydown", function(event){
+          const currentTime = Date.now();
+          const keyDownDistanceCount = keyDownDistance.length;
+          const keyUpDistanceCount = keyUpDistance.length;
+          if(keyDownDistanceCount > 0)
+          {
+             twoKeyDistance = currentTime - keyDownDistance[keyDownDistanceCount-1];
+             keyDownLatency.push(twoKeyDistance);
+          }
+          if(keyUpDistanceCount > 0)
+          {
+              upDownDistance = currentTime - keyUpDistance[keyUpDistanceCount-1];
+              keyUpDown.push(upDownDistance);
+          }
+          keyDownDistance.push(currentTime);
+          if (!startKey[event.keyCode])
+          {
+              startKey[event.keyCode] = currentTime;
+          }
+      });
+      document.addEventListener("keyup", function(event){
+          const currentTime = Date.now();
+          const keyUpDistanceCount = keyUpDistance.length;
+          const keyDownDistanceCount = keyDownDistance.length;
+          if(keyUpDistanceCount > 0)
+          {
+             twoKeyDistance = currentTime - keyUpDistance[keyUpDistanceCount-1];
+             keyUpLatency.push(twoKeyDistance);
+          }
+          if(keyDownDistanceCount > 1)
+          {
+              downUpDistance = currentTime - keyDownDistance[keyDownDistanceCount-2];
+              keyDownUp.push(downUpDistance);
+          }
+          keyUpDistance.push(currentTime);
+          keyHoldTime = currentTime - startKey[event.keyCode];
+          startKey[event.keyCode] = null;
+          if(isNaN(keyHoldTime) == false)
+          {
+              keyHold.push(keyHoldTime);
+          }
+      });
+      setInterval(function(){
+      const keyHoldAverage = avgNormalize(keyHold);
+      const downDownAverage = avgNormalize(keyDownLatency);
+      const upUpAverage = avgNormalize(keyUpLatency);
+      const upDownAverage = avgNormalize(keyUpDown);
+      const downUpAverage = avgNormalize(keyDownUp);
+      
+      userBiometrics['hold'] = keyHoldAverage;
+      userBiometrics['down_down'] = downDownAverage;
+      userBiometrics['up_up'] = upUpAverage;
+      userBiometrics['up_down'] = upDownAverage;
+      userBiometrics['down_up'] = downUpAverage;
+      
+      console.log(userBiometrics);
+      },60000);
+   </script>
+</html>

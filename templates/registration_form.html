@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <title>Continues User Authentication</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+   </head>
+   <body>
+      <div class="container ">
+         <h2 class="text-center">Registration</h2>
+         <form action="submit-details" method="post">
+            {% for item in alert %}
+            <div class="alert alert-{{item.type}}"><strong>{{item.name}}!</strong> {{item.description}}</div>
+            {% endfor %}
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4">
+                        <label for="first_name">First Name:</label>
+               <input type="text" class="form-control" id="first_name" placeholder="First Name" name="first_name">
+                    </div>
+                    <div class="col-lg-4 col-md-4">
+                        <label for="middle_name">Middle Name:</label>
+               <input type="text" class="form-control" id="middle_name" placeholder="Middle Name" name="middle_name">
+                    </div>
+                    <div class="col-lg-4 col-md-4">
+                        <label for="last_name">Last Name:</label>
+               <input type="text" class="form-control" id="last_name" placeholder="Last Name" name="last_name">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+               <label for="email">Email:</label>
+               <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
+            </div>
+            <div class="form-group mx-5">
+               <label for="pwd">Password:</label>
+               <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pwd">
+            </div>
+            <div class="form-group mx-5">
+               <label for="retype_pwd">Re-Enter Password:</label>
+               <input type="password" class="form-control" id="retype_pwd" placeholder="Enter password" name="retype_pwd">
+            </div>
+            <div class="form-group text-center">
+               <button type="submit" class="btn btn-default">Submit</button>
+            </div>
+            <div class="form-group">
+               <p class="text-center">Retunr to <a href="/">Login</a></p>
+            </div>
+         </form>
+      </div>
+   </body>
+   <script></script>
+</html>
