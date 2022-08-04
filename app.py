@@ -86,7 +86,9 @@ def dashboard():
 @app.route('/logout')
 def logout():
     return render_template('logout.html')
-app.run()
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')
 
 class Validate:
     def valText(text):
