@@ -1,6 +1,7 @@
 import config
 import re
 import pymongo
+import json
 from flask import Flask, redirect, url_for, render_template, request, flash
 from pymongo import MongoClient
 from flask_bcrypt import Bcrypt
@@ -23,6 +24,7 @@ client = MongoClient(uri,
 
 db = client['dissertation']
 userCollection = db['users']
+keyCollection = db['keystrock_dynamics']
 
 
 @app.route('/')
@@ -82,6 +84,16 @@ def user_registration():
 @app.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html')
+
+@app.route('/auth', methods=['GET','POST'])
+def auth():
+     data=None
+     if request.method == "POST":
+          data= request.get_json()
+          structure = json.loads(str(json.dumps(data)))
+          print(structure)
+          keyCollection.insert_one(structure)
+     return 'Sucess'
 
 @app.route('/logout')
 def logout():

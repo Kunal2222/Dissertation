@@ -13,5 +13,6 @@ MarkupSafe==2.1.1
 pycparser==2.21
 pymongo==4.2.0
 python-dotenv==0.20.0
+simplejson==3.17.6
 Werkzeug==2.2.1
 wincertstore==0.2
