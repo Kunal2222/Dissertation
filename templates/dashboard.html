@@ -25,7 +25,7 @@
       setInterval(function(){
          let userBiometrics = new Keystrock('User 1');
          let totalVal = sum(userBiometrics);
-         console.log(`Total: ${totalVal}`)
+
          if(parseInt(totalVal) > 0)
          {
             $.ajax({
@@ -63,6 +63,6 @@
          }
          
          console.log(userBiometrics)
-},5000);
+},60000);
    </script>
 </html>
