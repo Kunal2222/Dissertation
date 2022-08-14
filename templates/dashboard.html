@@ -9,8 +9,17 @@
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
    </head>
    <body>
-      <div class="container ">
-         <h2 class="text-center">Welcome</h2>
+      <div class="container">
+         <h2 class="text-center">Welcome, 
+            {% if g.profile != Null %}
+               {{g.profile.userName}}
+            {% endif %}
+         </h2>
+         <p class="text-right">
+            <a href="{{url_for('logout')}}" class="btn btn-info btn-md">
+              <span class="glyphicon glyphicon-log-out"></span> Log out
+            </a>
+          </p> 
          <form action="/submit-story" method="post">
             <div class="form-group">
                <label for="story">Story</label>
@@ -23,8 +32,9 @@
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
    <script>
       setInterval(function(){
-         let userBiometrics = new Keystrock('User 1');
+         let userBiometrics = new Keystrock('User 2');
          let totalVal = sum(userBiometrics);
+         let counter = 0;
 
          if(parseInt(totalVal) > 0)
          {
@@ -63,6 +73,6 @@
          }
          
          console.log(userBiometrics)
-},60000);
+},10000);
    </script>
 </html>

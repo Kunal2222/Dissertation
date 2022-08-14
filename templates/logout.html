@@ -12,7 +12,11 @@
     <div class="container-fluid" style="margin-top:200px">
         <div class="row">
             <div class="col">
-                <h1 class="text-center">All Done! Good Bye</h1>
+                <h1 class="text-center">
+                    {% if message != Null %}
+                        {{message}}
+                    {% endif %}
+                </h1>
             </div>
         </div>
         <div class="row text-center" >

@@ -62,8 +62,7 @@ class Keystrock{
         const upUpFeatures = new Features(keyUpLatency);
         const upDownFeatures = new Features(keyUpDown);
         const downUpFeatures = new Features(keyDownUp);
-        
-        userBiometrics['user'] = user;
+
         userBiometrics['hold_min'] = keyHoldFeatures.min();
         userBiometrics['hold_max'] = keyHoldFeatures.max();
         userBiometrics['hold_avg'] = keyHoldFeatures.avg();

@@ -1,22 +1,35 @@
+from copyreg import pickle
+from datetime import timedelta
+from email import message
 import config
 import re
+import os
+from os import environ, path
 import pymongo
 import json
-from flask import Flask, redirect, url_for, render_template, request, flash
+from flask import Flask, redirect, url_for, render_template, request, flash, session, jsonify, g
 from pymongo import MongoClient
 from flask_bcrypt import Bcrypt
+from bson import json_util, ObjectId
+import json
+import uuid
+
+
+class MyEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        if isinstance(obj, ObjectId):
+            return str(obj)
+        return super(MyEncoder, self).default(obj)
+
+uri = 'mongodb+srv://continuesauth.gqcdh.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority&ssl=true'
+
 
 app = Flask(__name__)
 
-'''Production Configuration'''
-#app.config.from_object('config.ProdConfig')
-
-'''Development Configuration'''
-app.config.from_object('config.DevConfig')
+app.secret_key = os.urandom(24)
 
 bcrypt = Bcrypt(app)
-
-uri = 'mongodb+srv://continuesauth.gqcdh.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority&ssl=true'
 
 client = MongoClient(uri,
                      tls=True,
@@ -27,14 +40,31 @@ userCollection = db['users']
 keyCollection = db['keystrock_dynamics']
 
 
+#model = pickle.load(open('model.pkl', 'rb'))
+
+@app.before_request
+def sessionHandle():
+    if session.get('session_key') != None:
+        session.permanent = True
+        app.permanent_session_lifetime = timedelta(minutes=5)
+        g.profile = session.get('profile')
+        
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    if session.get('session_key') != None:
+        print('Session',session.get('session_key'))
+        return redirect(url_for('dashboard'))
+    else:
+        return render_template('index.html')
 
 
 @app.route('/registration')
 def registration():
-    return render_template('registration_form.html')
+    if session.get('session_key') != None:
+        return redirect(url_for('dashboard'))
+    else:
+        return render_template('registration_form.html')
 
 
 @app.route('/security', methods=['POST', 'GET'])
@@ -52,15 +82,24 @@ def authentication():
         if checkUser > 0:
             userData = userCollection.find(myquery)
             dbPassword = userData[0]['password']
+            dbUserId = userData[0]['_id']
+            dbUserName = userData[0]['fullName']
+            dbUserId = json.loads(json_util.dumps(dbUserId))['$oid']
+            print(dbUserName)
             hasedUserPassword = bcrypt.generate_password_hash(userPassword)
-            #if Bcrypt.check_password_hash(userPassword, dbPassword):
             checkPassword = bcrypt.check_password_hash(dbPassword, userPassword)
             if checkPassword == True:
+                print(dbUserId)
+                session['session_key'] = uuid.uuid4().hex[:20]
+                session['profile'] = {"userId": dbUserId, "userName": dbUserName}
                 print('Successfully Loggedin')
+                return redirect(url_for('dashboard'))
+            else:
+                alert = [{"type":"warning","name":"Invalid","description":"Username or Password!"}]
+                return render_template('index.html', alert=alert)
         else:
             alert = [{"type":"danger","name":"Error","description":"User Doesn't Exist."}]
             return render_template('index.html', alert=alert)
-        return redirect(url_for('dashboard'))
 
 @app.route('/submit-details', methods=['POST', 'GET'])
 def user_registration():
@@ -83,21 +122,28 @@ def user_registration():
 
 @app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html')
+    if session.get('session_key') != None:
+        return render_template('dashboard.html')
+    else:
+        custMessage = 'Sorry! Session Out';
+        return render_template('logout.html', message=custMessage)
 
 @app.route('/auth', methods=['GET','POST'])
 def auth():
      data=None
      if request.method == "POST":
+        if session.get('session_key') != None:
           data= request.get_json()
+          data['user'] = session.get('profile')['userId']
           structure = json.loads(str(json.dumps(data)))
-          print(structure)
           keyCollection.insert_one(structure)
-     return 'Sucess'
+          return 'Sucess'
 
 @app.route('/logout')
 def logout():
-    return render_template('logout.html')
+    session.clear()
+    custMessage = 'All Done! Good Bye';
+    return render_template('logout.html', message=custMessage)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
