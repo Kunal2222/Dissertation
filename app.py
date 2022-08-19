@@ -31,8 +31,8 @@ uri = 'mongodb+srv://continuesauth.gqcdh.mongodb.net/?authSource=%24external&aut
 
 
 app = Flask(__name__)
-
 app.secret_key = os.urandom(24)
+app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
 
 bcrypt = Bcrypt(app)
 
