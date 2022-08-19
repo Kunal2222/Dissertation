@@ -4,6 +4,7 @@ from email import message
 import calendar
 import time
 from datetime import datetime
+from flask_session import Session
 import config
 import re
 import os
@@ -18,7 +19,7 @@ import json
 import uuid
 import pickle
 from model import Validation
-
+from flask_cors import CORS, cross_origin
 
 class MyEncoder(json.JSONEncoder):
 
@@ -33,6 +34,7 @@ uri = 'mongodb+srv://continuesauth.gqcdh.mongodb.net/?authSource=%24external&aut
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
+app.config['SESSION_PERMANENT'] = True
 
 bcrypt = Bcrypt(app)
 
@@ -48,6 +50,7 @@ sessionCollection = db['session']
 
 #model = pickle.load(open('model.pkl', 'rb'))
 
+CORS(app)
  
 behaviour = 0
 validator = 0
@@ -59,8 +62,9 @@ mouseBiometricTemp = []
 
 @app.before_request
 def sessionHandle():
-    if session.get('session_key') != None:
-        session.permanent = True
+    sessionKey = session.get('session_key')
+    if sessionKey != None:
+        session.modified = True
         app.permanent_session_lifetime = timedelta(minutes=5)
         g.profile = session.get('profile')
         
@@ -181,15 +185,15 @@ def mouseauth():
             structure = json.loads(str(json.dumps(data)))
             if mouseBehaviour >= 100:
                 if len(mouseBiometricTemp) >= 18:
-                    return 'Success'
+                    return jsonify({'status': 'success'})
                 else:
                     mouseBiometricTemp.append(structure)
                     print(mouseBiometricTemp)
-                    return 'Continue'
+                    return jsonify({'status': 'continue'})
             else:
                 mouseBehaviour += 1
                 mouseCollection.insert_one(structure)
-                return 'Continue'
+                return jsonify({'status': 'continue'})
 
 @app.route('/auth', methods=['GET','POST'])
 def auth():
