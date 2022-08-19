@@ -6,11 +6,33 @@ let ySpeed = new Array();
 let xAsix = new Array();
 let yAxis = new Array();
 let distance = new Array();
+let buttonSpeed = new Array();
+let scrollSpeed = new Array();
 
 let timeStamp = null;
 let xTempAxis = null;
 let yTempAxis = null;
 let speed = 0
+
+let startKey = {}
+window.addEventListener('mousedown',function(event){
+    console.log(event.button)
+    const currentTime = Date.now();
+    if (!startKey[event.button])
+    {
+        startKey[event.button] = currentTime;
+    }
+});
+window.addEventListener('mouseup',function(event){
+    const currentTime = Date.now();
+    buttonHold = currentTime - startKey[event.button];
+    startKey[event.button] = null;
+    buttonSpeed.push(check(buttonHold))
+});
+window.addEventListener('wheel',function(event){
+    scrollDeltaY = Math.abs(event.deltaY);
+    scrollSpeed.push(check(scrollDeltaY))
+});
 
 window.addEventListener('mousemove', function(event){
     if(timeStamp == null)
@@ -47,29 +69,26 @@ window.addEventListener('mousemove', function(event){
         xAsix.push(event.x);
         yAxis.push(event.y);
         distance.push(speed);
-        
-        function check(singelVal)
-        {
-            if(isFinite(singelVal) == false )
-            {
-                if(isNaN(singelVal) == true)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return singelVal;
-                }
-            }
-            else
-            {
-                return singelVal;
-            }
-        }
-
     }
 });
-
+function check(singelVal)
+{
+    if(isFinite(singelVal) == false )
+    {
+        if(isNaN(singelVal) == true)
+        {
+            return 0;
+        }
+        else
+        {
+            return singelVal;
+        }
+    }
+    else
+    {
+        return singelVal;
+    }
+}
 class MousedynamicS{
     constructor(){
         const xSpeedFeatures = new MouseFeatures(xSpeed);
@@ -77,6 +96,8 @@ class MousedynamicS{
         const xAxisFeatures = new MouseFeatures(xAsix);
         const yAxisFeatures = new MouseFeatures(yAxis);
         const distanceFeatures = new MouseFeatures(distance);
+        const mouseButtonSpeed = new MouseFeatures(buttonSpeed);
+        const mouseScrollSpeed = new MouseFeatures(scrollSpeed)
 
         mouseBiometrics['xSPeed_min'] = xSpeedFeatures.min();
         mouseBiometrics['xSPeed_max'] = xSpeedFeatures.max();
@@ -103,16 +124,30 @@ class MousedynamicS{
         mouseBiometrics['distance_avg'] = distanceFeatures.avg();
         mouseBiometrics['distance_std'] = distanceFeatures.std();
 
+        mouseBiometrics['button_speed_min'] = mouseButtonSpeed.min();
+        mouseBiometrics['button_speed_max'] = mouseButtonSpeed.max();
+        mouseBiometrics['button_speed_avg'] = mouseButtonSpeed.avg();
+        mouseBiometrics['button_speed_std'] = mouseButtonSpeed.std();
+
+        mouseBiometrics['scroll_speed_min'] = mouseScrollSpeed.min();
+        mouseBiometrics['scroll_speed_max'] = mouseScrollSpeed.max();
+        mouseBiometrics['scroll_speed_avg'] = mouseScrollSpeed.avg();
+        mouseBiometrics['scroll_speed_std'] = mouseScrollSpeed.std();
+
         xSpeed = [];
         ySpeed = [];
         xAsix = [];
         yAxis = [];
         distance = [];
+        buttonSpeed = [];
+        scrollSpeed=[];
 
         timeStamp = null;
         xTempAxis = null;
         yTempAxis = null;
         speed = 0
+
+        startKey.length = 0
 
         return mouseBiometrics;
     }
