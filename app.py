@@ -144,6 +144,7 @@ def read():
     if session.get('session_key') != None:
         return render_template('read.html')
     else:
+        session.clear()
         custMessage = 'Sorry! Session Out';
         return render_template('logout.html', message=custMessage)
 
@@ -152,6 +153,7 @@ def dashboard():
     if session.get('session_key') != None:
         return render_template('dashboard.html')
     else:
+        session.clear()
         custMessage = 'Sorry! Session Out';
         return render_template('logout.html', message=custMessage)
 
@@ -162,7 +164,7 @@ def mouseauth():
     global mouseBiometricTemp
     if request.method == "POST":
         if session.get('session_key') != None:
-            modelVal = Validation('1','Started')
+            #modelVal = Validation('1','Started')
             sessionUser = session.get('profile')['userId']
             data= request.get_json()
             data['user'] = session.get('profile')['userId']
