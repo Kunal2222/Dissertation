@@ -33,8 +33,9 @@ uri = 'mongodb+srv://continuesauth.gqcdh.mongodb.net/?authSource=%24external&aut
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
+app.config['SESSION_COOKIE_NAME'] = "Authentication_Session"
 app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
-app.config['SESSION_PERMANENT'] = True
+
 
 bcrypt = Bcrypt(app)
 
@@ -59,15 +60,6 @@ biometricTemp = []
 mouseBehaviour = 0
 mouseValidator = 0
 mouseBiometricTemp = []
-
-@app.before_request
-def sessionHandle():
-    sessionKey = session.get('session_key')
-    if sessionKey != None:
-        session.modified = True
-        app.permanent_session_lifetime = timedelta(minutes=5)
-        g.profile = session.get('profile')
-        
 
 @app.route('/')
 def index():
@@ -116,6 +108,7 @@ def authentication():
                 print(dbUserId)
                 session['session_key'] = uuid.uuid4().hex[:20]
                 session['profile'] = {"userId": dbUserId, "userName": dbUserName}
+                session.permanent = True
                 gmt = time.gmtime()
                 timeStamp = calendar.timegm(gmt)
                 dataTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
