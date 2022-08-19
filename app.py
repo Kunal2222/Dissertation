@@ -35,6 +35,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['SESSION_COOKIE_NAME'] = "Authentication_Session"
 app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
+app.config['PERMANENT_SESSION'] = True
 
 
 bcrypt = Bcrypt(app)
@@ -108,7 +109,6 @@ def authentication():
                 print(dbUserId)
                 session['session_key'] = uuid.uuid4().hex[:20]
                 session['profile'] = {"userId": dbUserId, "userName": dbUserName}
-                session.permanent = True
                 gmt = time.gmtime()
                 timeStamp = calendar.timegm(gmt)
                 dataTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
