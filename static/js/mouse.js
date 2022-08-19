@@ -16,7 +16,6 @@ let speed = 0
 
 let startKey = {}
 window.addEventListener('mousedown',function(event){
-    console.log(event.button)
     const currentTime = Date.now();
     if (!startKey[event.button])
     {

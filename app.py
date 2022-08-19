@@ -110,13 +110,14 @@ def authentication():
                 gmt = time.gmtime()
                 timeStamp = calendar.timegm(gmt)
                 dataTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                sessionEntry = sessionCollection.insert_one({'sessionKey':session.get('session_key'), 'firstName': session.get('profile')['userName'], 'middleName': session.get('profile')['userId'], 'datetime':dataTime, 'timestamp': timeStamp})
-                print('Successfully Loggedin')
+                sessionEntry = sessionCollection.insert_one({'sessionKey':session.get('session_key'), 'name': session.get('profile')['userName'], 'userId': session.get('profile')['userId'], 'datetime':dataTime, 'timestamp': timeStamp})
                 return redirect(url_for('dashboard'))
             else:
+                session.clear()
                 alert = [{"type":"warning","name":"Invalid","description":"Username or Password!"}]
                 return render_template('index.html', alert=alert)
         else:
+            session.clear()
             alert = [{"type":"danger","name":"Error","description":"User Doesn't Exist."}]
             return render_template('index.html', alert=alert)
 
