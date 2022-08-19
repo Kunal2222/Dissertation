@@ -32,7 +32,7 @@ uri = 'mongodb+srv://continuesauth.gqcdh.mongodb.net/?authSource=%24external&aut
 
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.config['SECRET_KEY'] = os.urandom(24)
 app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
 app.config['SESSION_PERMANENT'] = True
 
@@ -177,7 +177,10 @@ def mouseauth():
     global mouseValidator
     global mouseBiometricTemp
     if request.method == "POST":
-        if session.get('session_key') != None:
+        sessionKey = session.get('session_key')
+        if sessionKey == None:
+            return jsonify({'status': 'fail'})
+        else:
             #modelVal = Validation('1','Started')
             sessionUser = session.get('profile')['userId']
             data= request.get_json()
@@ -201,7 +204,10 @@ def auth():
     global validator
     global biometricTemp
     if request.method == "POST":
-        if session.get('session_key') != None:
+        sessionKey = session.get('session_key')
+        if sessionKey == None:
+            return jsonify({'status': 'fail'})
+        else:
             modelVal = Validation('1','Started')
             sessionUser = session.get('profile')['userId']
             data= request.get_json()
@@ -209,15 +215,15 @@ def auth():
             structure = json.loads(str(json.dumps(data)))
             if behaviour >= 100:
                 if len(biometricTemp) >= 18:
-                    return 'Success'
+                    return jsonify({'status': 'success'})
                 else:
                     biometricTemp.append(structure)
                     print(biometricTemp)
-                    return 'Continue'
+                    return jsonify({'status': 'continue'})
             else:
                 behaviour += 1
                 keyCollection.insert_one(structure)
-                return 'Continue'
+                return jsonify({'status': 'continue'})
 
 @app.route('/logout')
 def logout():
