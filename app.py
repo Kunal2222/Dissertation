@@ -67,7 +67,9 @@ def sessionHandle():
 
 @app.route('/')
 def index():
-    if session.get('session_key') != None:
+    sessionKey = session.get('session_key')
+    print(f'Session Index Key:{sessionKey}')
+    if sessionKey != None:
         print('Session',session.get('session_key'))
         return redirect(url_for('dashboard'))
     else:
@@ -76,7 +78,9 @@ def index():
 
 @app.route('/registration')
 def registration():
-    if session.get('session_key') != None:
+    sessionKey = session.get('session_key')
+    print(f'Session Registration Key:{sessionKey}')
+    if sessionKey != None:
         return redirect(url_for('dashboard'))
     else:
         return render_template('registration_form.html')
@@ -142,7 +146,9 @@ def user_registration():
 
 @app.route('/read')
 def read():
-    if session.get('session_key') != None:
+    sessionKey = session.get('session_key')
+    print(f'Session Read Key:{sessionKey}')
+    if sessionKey != None:
         return render_template('read.html')
     else:
         session.clear()
@@ -151,7 +157,9 @@ def read():
 
 @app.route('/dashboard')
 def dashboard():
-    if session.get('session_key') != None:
+    sessionKey = session.get('session_key')
+    print(f'Session Dashboard Key:{sessionKey}')
+    if sessionKey != None:
         return render_template('dashboard.html')
     else:
         session.clear()
