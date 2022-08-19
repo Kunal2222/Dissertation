@@ -18,8 +18,8 @@
          <div class="row">
             <div class="col-xl-6 col-lg-6">
                 <p class="text-left">
-                    <a href="{{url_for('read')}}" class="btn btn-info btn-md">
-                      <span class="glyphicon glyphicon-book"></span> Read
+                    <a href="{{url_for('dashboard')}}" class="btn btn-info btn-md">
+                      <span class="glyphicon glyphicon-edit"></span> Write
                     </a>
                   </p> 
             </div>
@@ -31,34 +31,27 @@
                   </p> 
             </div>
          </div>
-         <form action="/submit-story" method="post">
-            <div class="form-group">
-               <label for="story">Story</label>
-               <textarea class="form-control" name="story" rows="16" placeholder ="Start Writting" id="wrttingPad"></textarea>
-            </div>
-         </form>
+         <div class='embed-responsive' style='padding-bottom:150%'>
+            <object data='{{url_for("static", filename="file/pdf_custom.pdf")}}' type='application/pdf' width='100%' height='100%'></object>
+        </div>
       </div>
    </body>
-   <script type="application/javascript" src="{{url_for('static', filename='js/key_strok.js')}}"></script>
    <script type="application/javascript" src="{{url_for('static', filename='js/mouse.js')}}"></script>
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
    <script>
       setInterval(function(){
-         let userBiometrics = new Keystrock();
-         //let mouseBiometrics = new MousedynamicS();
-         //let biometrcis = Object.assign(userBiometrics,mouseBiometrics)
-         let totalVal = sum(userBiometrics);
+         let mouseBiometrics = new MousedynamicS();
+         let totalVal = sum(mouseBiometrics);
          let counter = 0;
-
 
          if(parseInt(totalVal) > 0)
          {
             $.ajax({
-               url: "auth",
+               url: "mouseauth",
                type: "POST",
                dataType: 'json',
                contentType:"application/json; charset=UTF-8",
-               data: JSON.stringify(userBiometrics),
+               data: JSON.stringify(mouseBiometrics),
                success: function(data) {
                   successmessage = 'Data was succesfully captured';
                   print(data)
@@ -88,7 +81,7 @@
             return total;
          }
          
-         console.log(biometrcis)
+         console.log(mouseBiometrics)
 },10000);
    </script>
 </html>

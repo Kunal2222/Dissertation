@@ -1,6 +1,9 @@
 from copyreg import pickle
 from datetime import timedelta
 from email import message
+import calendar
+import time
+from datetime import datetime
 import config
 import re
 import os
@@ -13,6 +16,8 @@ from flask_bcrypt import Bcrypt
 from bson import json_util, ObjectId
 import json
 import uuid
+import pickle
+from model import Validation
 
 
 class MyEncoder(json.JSONEncoder):
@@ -38,9 +43,19 @@ client = MongoClient(uri,
 db = client['dissertation']
 userCollection = db['users']
 keyCollection = db['keystrock_dynamics']
-
+mouseCollection = db['mouse_dynamics']
+sessionCollection = db['session']
 
 #model = pickle.load(open('model.pkl', 'rb'))
+
+ 
+behaviour = 0
+validator = 0
+biometricTemp = []
+
+mouseBehaviour = 0
+mouseValidator = 0
+mouseBiometricTemp = []
 
 @app.before_request
 def sessionHandle():
@@ -92,6 +107,10 @@ def authentication():
                 print(dbUserId)
                 session['session_key'] = uuid.uuid4().hex[:20]
                 session['profile'] = {"userId": dbUserId, "userName": dbUserName}
+                gmt = time.gmtime()
+                timeStamp = calendar.timegm(gmt)
+                dataTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                sessionEntry = sessionCollection.insert_one({'sessionKey':session.get('session_key'), 'firstName': session.get('profile')['userName'], 'middleName': session.get('profile')['userId'], 'datetime':dataTime, 'timestamp': timeStamp})
                 print('Successfully Loggedin')
                 return redirect(url_for('dashboard'))
             else:
@@ -120,6 +139,14 @@ def user_registration():
             {'fullName':fullName, 'firstName': firstName, 'middleName': middleName, 'lastName': lastName, 'email': email, 'password': password})
         return redirect(url_for('index'))
 
+@app.route('/read')
+def read():
+    if session.get('session_key') != None:
+        return render_template('read.html')
+    else:
+        custMessage = 'Sorry! Session Out';
+        return render_template('logout.html', message=custMessage)
+
 @app.route('/dashboard')
 def dashboard():
     if session.get('session_key') != None:
@@ -128,16 +155,53 @@ def dashboard():
         custMessage = 'Sorry! Session Out';
         return render_template('logout.html', message=custMessage)
 
+@app.route('/mouseauth', methods=['GET','POST'])
+def mouseauth():
+    global mouseBehaviour
+    global mouseValidator
+    global mouseBiometricTemp
+    if request.method == "POST":
+        if session.get('session_key') != None:
+            modelVal = Validation('1','Started')
+            sessionUser = session.get('profile')['userId']
+            data= request.get_json()
+            data['user'] = session.get('profile')['userId']
+            structure = json.loads(str(json.dumps(data)))
+            if mouseBehaviour >= 100:
+                if len(mouseBiometricTemp) >= 18:
+                    return 'Success'
+                else:
+                    mouseBiometricTemp.append(structure)
+                    print(mouseBiometricTemp)
+                    return 'Continue'
+            else:
+                mouseBehaviour += 1
+                mouseCollection.insert_one(structure)
+                return 'Continue'
+
 @app.route('/auth', methods=['GET','POST'])
 def auth():
-     data=None
-     if request.method == "POST":
+    global behaviour
+    global validator
+    global biometricTemp
+    if request.method == "POST":
         if session.get('session_key') != None:
-          data= request.get_json()
-          data['user'] = session.get('profile')['userId']
-          structure = json.loads(str(json.dumps(data)))
-          keyCollection.insert_one(structure)
-          return 'Sucess'
+            modelVal = Validation('1','Started')
+            sessionUser = session.get('profile')['userId']
+            data= request.get_json()
+            data['user'] = session.get('profile')['userId']
+            structure = json.loads(str(json.dumps(data)))
+            if behaviour >= 100:
+                if len(biometricTemp) >= 18:
+                    return 'Success'
+                else:
+                    biometricTemp.append(structure)
+                    print(biometricTemp)
+                    return 'Continue'
+            else:
+                behaviour += 1
+                keyCollection.insert_one(structure)
+                return 'Continue'
 
 @app.route('/logout')
 def logout():

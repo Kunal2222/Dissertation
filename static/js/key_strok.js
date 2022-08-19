@@ -56,7 +56,7 @@ document.getElementById("wrttingPad").addEventListener("keyup", function(event){
 
 /*Set Interverl for every minute or second to detect the biometrics*/
 class Keystrock{
-    constructor(user){
+    constructor(){
         const keyHoldFeatures = new Features(keyHold);
         const downDownFeatures = new Features(keyDownLatency);
         const upUpFeatures = new Features(keyUpLatency);
@@ -94,6 +94,10 @@ class Keystrock{
         keyUpLatency = [];
         keyUpDown = [];
         keyDownUp = [];
+
+        startKey.length = 0;
+        keyDownDistance.length = 0;
+        keyUpDistance.length = 0;
 
         return userBiometrics;
     }
