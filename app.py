@@ -69,21 +69,22 @@ def sessionHandle():
 def index():
     sessionKey = session.get('session_key')
     print(f'Session Index Key:{sessionKey}')
-    if sessionKey != None:
+    if sessionKey == None:
+        return render_template('index.html')
+    else:
         print('Session',session.get('session_key'))
         return redirect(url_for('dashboard'))
-    else:
-        return render_template('index.html')
+        
 
 
 @app.route('/registration')
 def registration():
     sessionKey = session.get('session_key')
     print(f'Session Registration Key:{sessionKey}')
-    if sessionKey != None:
-        return redirect(url_for('dashboard'))
-    else:
+    if sessionKey == None:
         return render_template('registration_form.html')
+    else:
+        return redirect(url_for('dashboard'))
 
 
 @app.route('/security', methods=['POST', 'GET'])
@@ -148,23 +149,23 @@ def user_registration():
 def read():
     sessionKey = session.get('session_key')
     print(f'Session Read Key:{sessionKey}')
-    if sessionKey != None:
-        return render_template('read.html')
-    else:
+    if sessionKey == None:
         session.clear()
         custMessage = 'Sorry! Session Out';
         return render_template('logout.html', message=custMessage)
+    else:
+        return render_template('read.html')
 
 @app.route('/dashboard')
 def dashboard():
     sessionKey = session.get('session_key')
     print(f'Session Dashboard Key:{sessionKey}')
-    if sessionKey != None:
-        return render_template('dashboard.html')
-    else:
+    if sessionKey == None:
         session.clear()
         custMessage = 'Sorry! Session Out';
         return render_template('logout.html', message=custMessage)
+    else:
+        return render_template('dashboard.html')
 
 @app.route('/mouseauth', methods=['GET','POST'])
 def mouseauth():
