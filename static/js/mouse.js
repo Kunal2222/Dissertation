@@ -1,3 +1,4 @@
+//Mouse Dynamics
 const mouseBiometrics = new Object();
 
 let xSpeed = new Array();
