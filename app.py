@@ -19,14 +19,6 @@ import json
 import uuid
 import pickle
 from model import Validation
-from flask_cors import CORS, cross_origin
-
-class MyEncoder(json.JSONEncoder):
-
-    def default(self, obj):
-        if isinstance(obj, ObjectId):
-            return str(obj)
-        return super(MyEncoder, self).default(obj)
 
 uri = 'mongodb+srv://continuesauth.gqcdh.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority&ssl=true'
 
@@ -49,10 +41,6 @@ userCollection = db['users']
 keyCollection = db['keystrock_dynamics']
 mouseCollection = db['mouse_dynamics']
 sessionCollection = db['session']
-
-#model = pickle.load(open('model.pkl', 'rb'))
-
-CORS(app)
  
 behaviour = 0
 validator = 0
