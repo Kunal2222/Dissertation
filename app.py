@@ -19,17 +19,17 @@ import json
 import uuid
 import pickle
 from model import Validation
+from cryptography.hazmat.primitives.asymmetric import ec
 
 uri = 'mongodb+srv://continuesauth.gqcdh.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority&ssl=true'
 
 
 app = Flask(__name__)
 #app.config['SECRET_KEY'] = os.urandom(24)
-app.config['SECRET_KEY'] = 'randomstring'
+app.config['SECRET_KEY'] = 'h\xd0Pp\x17\xe0ZG\xfe\xa9\xa9\xf1\xe6\xb9\xc1\xedQ\xf1\xcdO=\x00\x01\xd6[\xff\x88k\xae\xfd\xa6\x9c'
 app.config['SESSION_COOKIE_NAME'] = "Authentication_Session"
 app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
 app.config['PERMANENT_SESSION'] = True
-
 
 bcrypt = Bcrypt(app)
 
@@ -93,8 +93,11 @@ def authentication():
             hasedUserPassword = bcrypt.generate_password_hash(userPassword)
             checkPassword = bcrypt.check_password_hash(dbPassword, userPassword)
             if checkPassword == True:
-                print(dbUserId)
-                session['session_key'] = uuid.uuid4().hex[:20]
+                server_private_key = ec.generate_private_key(ec.SECP256K1())
+                private_key = ec.generate_private_key(ec.SECP256K1())
+                shared_key = server_private_key.exchange(ec.ECDH(), private_key.public_key())
+
+                session['session_key'] = shared_key
                 session['profile'] = {"userId": dbUserId, "userName": dbUserName}
                 gmt = time.gmtime()
                 timeStamp = calendar.timegm(gmt)
