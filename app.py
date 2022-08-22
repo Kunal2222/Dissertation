@@ -24,7 +24,8 @@ uri = 'mongodb+srv://continuesauth.gqcdh.mongodb.net/?authSource=%24external&aut
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(24)
+#app.config['SECRET_KEY'] = os.urandom(24)
+app.config['SECRET_KEY'] = 'randomstring'
 app.config['SESSION_COOKIE_NAME'] = "Authentication_Session"
 app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
 app.config['PERMANENT_SESSION'] = True
@@ -59,8 +60,6 @@ def index():
     else:
         print('Session',session.get('session_key'))
         return redirect(url_for('dashboard'))
-        
-
 
 @app.route('/registration')
 def registration():
