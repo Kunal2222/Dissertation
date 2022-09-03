@@ -82,7 +82,6 @@ class Validation:
     print(f'Imposter Label Count: {(self.impDfLabels)}')
     
     if len(self.dfNormalize) >= 50:
-
       self.dfNormalize = self.dfNormalize.sample(n = 50)
       self.dfLabels = self.dfLabels.sample(n = 50)
 
@@ -99,7 +98,7 @@ class Validation:
     print(f'Imposter Label Count: {(self.impDfLabels)}')
 
     xTrain, xTest, yTrain, yTest = train_test_split(self.dfNormalize, self.dfLabels, test_size=0.2, random_state = 4)
-    impXTrain, impXTest, impYTrain, impYTest = train_test_split(self.impDfNormalize, self.impDfLabels, test_size=0.7, random_state = 4)
+    impXTrain, impXTest, impYTrain, impYTest = train_test_split(self.impDfNormalize, self.impDfLabels, test_size=0.6, random_state = 4)
 
     tempData = self.labelReplace(impYTrain,'imposter')
 
@@ -133,7 +132,7 @@ class Validation:
     support = int(100 * falsePositive[1]/ testLength)
     score = int(score * 100)
     print(f'Support:{support},Score:{score}')
-    if support > 50 or score < 50:
+    if support > 40 or score < 60:
       print('imposter')
       return 'imposter'
     else:

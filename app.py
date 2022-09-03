@@ -197,7 +197,7 @@ def auth():
             structure = json.loads(str(json.dumps(data)))
             if behaviour >= 0:
                 print(f'In Behaviour End State {len(biometricTemp)}')
-                if len(biometricTemp) >= 5:
+                if len(biometricTemp) >= 18:
                     modelVal = str(Validation(sessionUser,biometricTemp))
                     print('Final',type(modelVal))
                     if modelVal == 'imposter':
