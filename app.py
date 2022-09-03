@@ -191,19 +191,29 @@ def auth():
         if sessionKey == None:
             return jsonify({'status': 'fail'})
         else:
-            modelVal = Validation('1','Started')
             sessionUser = session.get('profile')['userId']
             data= request.get_json()
             data['user'] = session.get('profile')['userId']
             structure = json.loads(str(json.dumps(data)))
-            if behaviour >= 100:
-                if len(biometricTemp) >= 18:
-                    return jsonify({'status': 'success'})
+            if behaviour >= 0:
+                print(f'In Behaviour End State {len(biometricTemp)}')
+                if len(biometricTemp) >= 5:
+                    modelVal = str(Validation(sessionUser,biometricTemp))
+                    print('Final',type(modelVal))
+                    if modelVal == 'imposter':
+                        print('In Imposter')
+                        return jsonify({'status': 'imposter'})
+                    else:
+                        print('In User')
+                        #keyCollection.insert_many(biometricTemp)
+                        print('Prediction:',modelVal)
+                        biometricTemp = []
+                        return jsonify({'status': str(modelVal)})
                 else:
                     biometricTemp.append(structure)
-                    print(biometricTemp)
                     return jsonify({'status': 'continue'})
             else:
+                print(f'In Behaviour State {behaviour}')
                 behaviour += 1
                 keyCollection.insert_one(structure)
                 return jsonify({'status': 'continue'})
